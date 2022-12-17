@@ -1,0 +1,10 @@
+#Mysql Host
+dbhost: "localhost"
+#MySQL Username
+dbusername: "root"
+#MySQL Password
+dbpasswd: "gl182213"
+#Database name
+dbname: "gl18"
+#RECAPTCHA private key
+recaptcha_key: "your_key_here"
