@@ -12,6 +12,6 @@ public class GetUserInfo {
     public static String getInfo(HttpServletRequest request){
 
         User user = new User(Integer.valueOf(request.getParameter("sid")));
-        return user.getName();
+        return user.getBasicInfo();
     }
 }

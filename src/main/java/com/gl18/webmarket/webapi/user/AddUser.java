@@ -9,6 +9,8 @@ public class AddUser {
 
     @GetMapping("/api/user/add")
     public static String addUser(HttpServletRequest request){
+        String recaptchaCode = request.getParameter("response");
+
         return null;
     }
 }

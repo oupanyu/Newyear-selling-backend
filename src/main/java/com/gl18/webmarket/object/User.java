@@ -80,13 +80,22 @@ public class User {
     }
 
     public String getBasicInfo(){
-        JSONObject object = new JSONObject();
-        object.put("code",200);
-        object.put("name",name);
-        object.put("id",id);
-        object.put("sid",sid);
+        JSONObject rootObj = new JSONObject();
+        JSONObject obj = new JSONObject();
+
+        obj.put("name",name);
+        obj.put("id",id);
+        obj.put("sid",sid);
+        obj.put("class",classnum);
+        obj.put("things",JSONArray.parse(things));
+        obj.put("status",status);
+
+
+        rootObj.put("code",200);
+        rootObj.put("data",obj);
+
         //TODO: add basic info into JSON
-        return object.toJSONString();
+        return rootObj.toJSONString();
 
     }
 
