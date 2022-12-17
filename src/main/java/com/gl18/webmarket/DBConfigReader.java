@@ -17,6 +17,7 @@ public class DBConfigReader {
     public String dbpasswd = null;
     public String dbname = null;
 
+    public String admin_token;
     public String recaptcha_key = null;
 
 
@@ -37,7 +38,9 @@ public class DBConfigReader {
                         "#Database name\n" +
                         "dbname: \"database\"\n" +
                         "#RECAPTCHA private key\n" +
-                        "recaptcha_key: \"your_key_here\"";
+                        "recaptcha_key: \"your_key_here\"\n" +
+                        "#Admin token\n" +
+                        "admin_token : \"your_token_here\"\n";
                 folderFile.mkdirs();
                 file.createNewFile();
                 FileWriter fileWritter = new FileWriter(fileName,true);
@@ -54,6 +57,7 @@ public class DBConfigReader {
             this.dbpasswd = (String) map.get("dbpasswd");
             this.dbname = (String) map.get("dbname");
             this.recaptcha_key = (String) map.get("recaptcha_key");
+            this.admin_token = (String) map.get("admin_token");
 
         } catch (IOException e){
             e.printStackTrace();

@@ -3,6 +3,10 @@ package com.gl18.webmarket.object;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.gl18.webmarket.WebmarketApplication;
+import com.gl18.webmarket.database.CheckName;
+import com.gl18.webmarket.object.exception.DuplicationOfNameException;
+import com.gl18.webmarket.object.exception.IncompleteInfoException;
+import com.gl18.webmarket.utils.DBUtil;
 
 import java.sql.*;
 
@@ -10,7 +14,8 @@ public class User {
 
     private String name,passwd,things,token;
 
-    private Integer id,grade,classnum,sid,price;
+    private Integer id,grade,classnum,sid;
+    private Double price;
 
     private Short status;
 
@@ -46,8 +51,48 @@ public class User {
         return token;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
+    }
+
+    public Short getStatus() {
+        return status;
+    }
+
+    public void setClassnum(Integer classnum) {
+        this.classnum = classnum;
+    }
+
+    public void setGrade(Integer grade) {
+        this.grade = grade;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
+    }
+
+    public void setSid(Integer sid) {
+        this.sid = sid;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setThings(String things) {
+        this.things = things;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public User(Integer sid){
@@ -66,18 +111,22 @@ public class User {
                 name = result.getString("name");
                 classnum = result.getInt("class");
                 things = result.getString("things");
-                price = result.getInt("price");
+                price = result.getDouble("price");
                 passwd = result.getString("passwd");
                 token = result.getString("token");
                 grade = result.getInt("grade");
                 status = result.getShort("status");
                 i++;
             }
+            statement.cancel();
+            conn.close();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    public User(){}
 
     public String getBasicInfo(){
         JSONObject rootObj = new JSONObject();
@@ -86,17 +135,45 @@ public class User {
         obj.put("name",name);
         obj.put("id",id);
         obj.put("sid",sid);
+        obj.put("grade",grade);
         obj.put("class",classnum);
         obj.put("things",JSONArray.parse(things));
         obj.put("status",status);
+        obj.put("price",price);
 
-
+        //生成JSON
         rootObj.put("code",200);
         rootObj.put("data",obj);
 
-        //TODO: add basic info into JSON
         return rootObj.toJSONString();
 
+    }
+
+    public void createAtDatabase() throws IncompleteInfoException, DuplicationOfNameException {
+        String send = "INSERT INTO `buyer` (`sid`, `passwd`, `name`, `grade`, `class`) VALUES " +
+                "(?, ?, ?, ?, ?)";
+
+        if (sid == null && passwd ==null && name == null && grade == null && classnum == null){
+            throw new IncompleteInfoException();
+        }//如果信息不完整，抛出异常
+
+        if ((CheckName.ifDuplicationOfName(name) && CheckName.ifDuplicationOfStudentID(sid)) || CheckName.ifDuplicationOfStudentID(sid)){
+            throw new DuplicationOfNameException();
+        }
+
+        Connection connection = DBUtil.getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(send);
+            preparedStatement.setInt(1,sid);
+            preparedStatement.setString(2,passwd);
+            preparedStatement.setString(3,name);
+            preparedStatement.setInt(4,grade);
+            preparedStatement.setInt(5,classnum);
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

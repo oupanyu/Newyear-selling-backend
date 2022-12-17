@@ -2,6 +2,10 @@ package com.gl18.webmarket.object;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.gl18.webmarket.WebmarketApplication;
+import com.gl18.webmarket.database.CheckName;
+import com.gl18.webmarket.object.exception.DuplicationOfNameException;
+import com.gl18.webmarket.object.exception.IncompleteInfoException;
+import com.gl18.webmarket.utils.DBUtil;
 
 import java.sql.*;
 
@@ -9,7 +13,8 @@ public class Goods {
 
     private String name,description;
 
-    private Integer id,left,maximum,bought,price;
+    private Integer id,left,maximum,bought;
+    private Double price;
 
     private Short status,maxpic;
 
@@ -64,21 +69,25 @@ public class Goods {
                 maxpic = result.getShort("maxpic");
                 maximum = result.getInt("maximum");
                 bought = result.getInt("bought");
-                price = result.getInt("price");
+                price = result.getDouble("price");
 
             }
+            statement.cancel();
+            conn.close();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public Goods(){}
+
     public String getWithJSONString(){
         JSONObject rootObj = new JSONObject(),object = new JSONObject();
         rootObj.put("code",200);
         object.put("id",id);
         object.put("name",name);
-        object.put("left",left);
+        object.put("left",maximum - bought);
         object.put("status",status);
         object.put("description",description);
         object.put("maxpic",maxpic);
@@ -89,5 +98,52 @@ public class Goods {
         rootObj.put("data",object);
 
         return rootObj.toJSONString();
+    }
+
+    public void createAtDatabase() throws IncompleteInfoException {
+        String send = "INSERT INTO `goods` (`name`, `price`, `status`, `description`, `maximum`) VALUES " +
+                "(?, ?, ?, ?, ?)";
+
+        if (name == null || maximum ==null || price == null || status == null){
+            throw new IncompleteInfoException();
+        }//如果信息不完整，抛出异常
+        if (description == null){
+            description = "No description.";
+        }
+
+
+        Connection connection = DBUtil.getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(send);
+            preparedStatement.setString(1,name);
+            preparedStatement.setDouble(2,price);
+            preparedStatement.setInt(3,status);
+            preparedStatement.setString(4,description);
+            preparedStatement.setInt(5,maximum);
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMaximum(Integer maximum) {
+        this.maximum = maximum;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }
