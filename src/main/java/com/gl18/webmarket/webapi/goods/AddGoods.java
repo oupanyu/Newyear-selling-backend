@@ -41,6 +41,8 @@ public class AddGoods {
 
             goods.setStatus(Short.valueOf(request.getParameter("status")));
 
+            goods.setGroup_name(request.getParameter("group_name"));
+
         }catch (Exception e){
             rootObj.put("code",700);
             rootObj.put("result","incomplete information");
