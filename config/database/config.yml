@@ -3,8 +3,10 @@ dbhost: "localhost"
 #MySQL Username
 dbusername: "root"
 #MySQL Password
-dbpasswd: "gl182213"
+dbpasswd: "88224552"
 #Database name
 dbname: "gl18"
 #RECAPTCHA private key
-recaptcha_key: "your_key_here"
+recaptcha_key: "6Le4NIwiAAAAANmjfyUhwPWimJjTn3xno5HtIWq2"
+#Admin_token
+admin_token: "79f676fa7e0f11eda0075811228f4d8e"

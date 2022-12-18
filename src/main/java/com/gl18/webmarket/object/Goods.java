@@ -2,8 +2,6 @@ package com.gl18.webmarket.object;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.gl18.webmarket.WebmarketApplication;
-import com.gl18.webmarket.database.CheckName;
-import com.gl18.webmarket.object.exception.DuplicationOfNameException;
 import com.gl18.webmarket.object.exception.IncompleteInfoException;
 import com.gl18.webmarket.utils.DBUtil;
 
@@ -11,7 +9,7 @@ import java.sql.*;
 
 public class Goods {
 
-    private String name,description;
+    private String name,description,group_name;
 
     private Integer id,left,maximum,bought;
     private Double price;
@@ -50,6 +48,10 @@ public class Goods {
         return name;
     }
 
+    public String getGroup_name() {
+        return group_name;
+    }
+
     public Goods(Integer gid){
 
         try {
@@ -63,13 +65,14 @@ public class Goods {
             while (result.next()){
                 id = result.getInt("id");
                 name = result.getString("name");
-                left = result.getInt("left");
+                //left = result.getInt("left");
                 status = result.getShort("status");
                 description = result.getString("description");
                 maxpic = result.getShort("maxpic");
                 maximum = result.getInt("maximum");
                 bought = result.getInt("bought");
                 price = result.getDouble("price");
+                group_name = result.getString("group_name");
 
             }
             statement.cancel();
@@ -87,6 +90,7 @@ public class Goods {
         rootObj.put("code",200);
         object.put("id",id);
         object.put("name",name);
+        object.put("group_name",group_name);
         object.put("left",maximum - bought);
         object.put("status",status);
         object.put("description",description);
@@ -101,10 +105,10 @@ public class Goods {
     }
 
     public void createAtDatabase() throws IncompleteInfoException {
-        String send = "INSERT INTO `goods` (`name`, `price`, `status`, `description`, `maximum`) VALUES " +
-                "(?, ?, ?, ?, ?)";
+        String send = "INSERT INTO `goods` (`name`,`price`, `status`, `description`, `maximum` , 'group_name') VALUES " +
+                "(?, ?, ?, ?, ?,?)";
 
-        if (name == null || maximum ==null || price == null || status == null){
+        if (name == null || maximum ==null || price == null || status == null || group_name == null ){
             throw new IncompleteInfoException();
         }//如果信息不完整，抛出异常
         if (description == null){
@@ -120,11 +124,39 @@ public class Goods {
             preparedStatement.setInt(3,status);
             preparedStatement.setString(4,description);
             preparedStatement.setInt(5,maximum);
+            preparedStatement.setString(6,group_name);
 
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void updateAtDatabase() throws IncompleteInfoException {
+
+        if (name == null || maximum ==null || price == null || status == null || group_name == null){
+            throw new IncompleteInfoException();
+        }//如果信息不完整，抛出异常
+        if (description == null){
+            description = "No description.";
+        }
+
+        String sql = "UPDATE goods SET name=?,price=?,status=?,description=?,maximum=?,group_name=? WHERE id = ?";
+        try {
+            Connection connection = DBUtil.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1,name);
+            ps.setDouble(2,price);
+            ps.setShort(3,status);
+            ps.setString(4,description);
+            ps.setInt(5,maximum);
+            ps.setString(6,group_name);
+            ps.setInt(7,id);
+            ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void setStatus(Short status) {
@@ -145,5 +177,9 @@ public class Goods {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public void setGroup_name(String group_name) {
+        this.group_name = group_name;
     }
 }
