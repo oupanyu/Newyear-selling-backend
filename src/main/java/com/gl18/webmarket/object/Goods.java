@@ -52,6 +52,10 @@ public class Goods {
         return group_name;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
     public Goods(Integer gid){
 
         try {
@@ -181,5 +185,37 @@ public class Goods {
 
     public void setGroup_name(String group_name) {
         this.group_name = group_name;
+    }
+
+    public void buy(Integer count){
+        String sql = "UPDATE goods SET bought=? WHERE id = ?";
+        try {
+            Connection connection = DBUtil.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1,bought + count);
+            ps.setDouble(2,id);
+
+            ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void add(Integer count){
+        String sql = "UPDATE goods SET bought=? WHERE id = ?";
+        try {
+            Connection connection = DBUtil.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1,bought - count);
+            ps.setDouble(2,id);
+
+            ps.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean checkIfOverCount(Integer count){
+        return !(count + bought <= maximum);
     }
 }

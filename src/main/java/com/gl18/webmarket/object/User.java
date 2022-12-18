@@ -6,6 +6,7 @@ import com.gl18.webmarket.WebmarketApplication;
 import com.gl18.webmarket.database.CheckName;
 import com.gl18.webmarket.object.exception.DuplicationOfNameException;
 import com.gl18.webmarket.object.exception.IncompleteInfoException;
+import com.gl18.webmarket.object.exception.OverCountException;
 import com.gl18.webmarket.utils.DBUtil;
 
 import java.sql.*;
@@ -176,4 +177,87 @@ public class User {
         }
     }
 
+    public boolean addToCart(Integer goodID,Integer count) throws OverCountException {
+        JSONArray jsonArray = JSONArray.parseArray(things);
+        int size = jsonArray.size();
+        for (int i = 0; i < size ;i++){
+            if(jsonArray.getJSONObject(i).getInteger("id").equals(goodID)){
+
+                if (new Goods(goodID).checkIfOverCount(count)){
+                    throw new OverCountException();
+                }
+                jsonArray.getJSONObject(i).replace("count",
+                        jsonArray.getJSONObject(i).getInteger("count") + count);
+                new Goods(goodID).buy(count);
+                String send = "UPDATE buyer SET things=?,price=? WHERE id = ?";
+                Connection connection = DBUtil.getConnection();
+                try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(send);
+                    preparedStatement.setString(1,jsonArray.toJSONString());
+                    preparedStatement.setDouble(2,price + (new Goods(goodID).getPrice()) * count);
+                    preparedStatement.setInt(3,id);
+
+                    preparedStatement.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+                return true;
+            }
+        }
+        if (new Goods(goodID).checkIfOverCount(count)){
+            throw new OverCountException();
+        }
+        JSONObject object = new JSONObject();
+        object.put("id",goodID);
+        object.put("group_name",new Goods(goodID).getGroup_name());
+        object.put("name",new Goods(goodID).getName());
+        object.put("description",new Goods(goodID).getDescription());
+        object.put("count",count);
+        jsonArray.add(object);
+        new Goods(goodID).buy(count);
+        String send = "UPDATE buyer SET things=?,price=? WHERE id=?";
+        Connection connection = DBUtil.getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(send);
+            preparedStatement.setString(1,jsonArray.toJSONString());
+            preparedStatement.setDouble(2,price + (new Goods(goodID).getPrice()) * count);
+            preparedStatement.setInt(3,id);
+
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return true;
+    }
+
+    public void deleteGoods(Integer gid){
+        JSONArray jsonArray = JSONArray.parseArray(things);
+        int size = jsonArray.size();
+        for (int i = 0; i < size ;i++){
+            if(jsonArray.getJSONObject(i).getInteger("id").equals(gid)){
+                Integer count = jsonArray.getJSONObject(i).getInteger("count");
+                jsonArray.remove(i);
+                new Goods(gid).add(count);
+                String send = "UPDATE buyer SET things=?,price=? WHERE id = ?";
+                Connection connection = DBUtil.getConnection();
+                try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(send);
+                    preparedStatement.setString(1,jsonArray.toJSONString());
+                    preparedStatement.setDouble(2,price - (new Goods(gid).getPrice()) * count);
+                    preparedStatement.setInt(3,id);
+
+                    preparedStatement.execute();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+            }
+        }
+
+    }
 }
