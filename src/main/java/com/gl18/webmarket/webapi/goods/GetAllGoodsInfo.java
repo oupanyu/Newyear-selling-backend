@@ -33,6 +33,7 @@ public class GetAllGoodsInfo {
                 object.put("status",result.getShort("status"));
                 object.put("description",result.getString("description"));
                 object.put("bought",result.getInt("bought"));
+                object.put("maxpic",result.getInt("maxpic"));
                 object.put("maximum",result.getInt("maximum"));
                 object.put("price",result.getInt("price"));
                 jsonArray.add(object);

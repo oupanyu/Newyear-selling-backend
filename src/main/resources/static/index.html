@@ -88,8 +88,8 @@
 <script>
 
   function onLoad(){
-
-    var div_child1 = '<div class="card card-body"><a href="#" class="card_link"><div class="row"><div class="col-4"><img src="images/replace.png" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id="'
+    var div_href = "#"
+    var div_child1 = '<div class="card card-body"><a href="' + div_href+ '" class="card_link"><div class="row"><div class="col-4"><img src="images/replace.png" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id="'
     var div_child2 = '">【社团名称】产品名称</h4><p class="card-text" id="'
     var div_child3 = '">产品简介</p><p class="btn btn-primary" id="'
     var div_child4 = '">剩余库存: 123</p></div></div></a></div>'
@@ -108,7 +108,7 @@
           document.getElementById("osleft" + i).innerHTML = "剩余库存" + (lst.maximum - lst.bought)  //添加商品余量
         }else if (data[i].status === 1){
           lst = data[i]
-          $("#forsale").append(getForSaleDiv("fsname" + i , "fsdesc" + i,"fsleft" + i ))
+          $("#forsale").append(getForSaleDiv("#","fsname" + i , "fsdesc" + i,"fsleft" + i ))
           document.getElementById("fsname" + i).innerHTML = "【" + lst.group_name + "】" + lst.name + "(待售)" //添加商品名称
           document.getElementById("fsdesc" + i).innerHTML = lst.description  //添加商品描述
           document.getElementById("fsleft" + i).innerHTML = "剩余库存" + (lst.maximum - lst.bought)  //添加商品余量
@@ -152,7 +152,7 @@
       <div class="col-4 button_menu_col"><a href="#"><img alt="button_icon" class="button_icon" src="images/icon/wodejuhuasuan.png"></a></div>
     </div>
   </div>
-
+</div>
 </body>
 
 </html>

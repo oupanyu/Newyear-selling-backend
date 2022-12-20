@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<meta name="viewport" content="width=device-width, initial-scale=1, text/html, charset=UTF-8">
+<meta  charset="UTF-8">
+<!--CSS引入-->
+<link href="css/main.css" rel="stylesheet">
+<!--Bootstrap 引入-->
+<script src="bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/API.js"></script>
+<script src="js/utils.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+<script src="js/cookiehandler.js"></script>
+
+<link href="bootstrap-5.2.3-dist/css/bootstrap.min.css" rel="stylesheet">
+<!--JQ-->
+<script src="js/jquery-3.6.2.min.js"></script>
+<script src="js/main.js"></script>
+<body onload="onLoad(),setMe()"></body>
+
+<head>
+  <title>元旦狂欢夜产品订购</title>
+  <header class="container">
+    <!--轮播图片-->
+    <div id="main_carousel" class="carousel slide" data-bs-ride="false">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#main_carousel" data-bs-slide-to="0" class="active" aria-current="true"
+          aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#main_carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#main_carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="images/replace.png" class="d-block w-50" alt="first image">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>第一张图片</h5>
+            <p>第一张图片</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="images/replace.png" class="d-block w-50" alt="second image">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>第二张图片</h5>
+            <p>第二张图片</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="images/replace.png" class="d-block w-50" alt="third image">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>第三张图片</h5>
+            <p>第三张图片</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#main_carousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#main_carousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </header>
+</head>
+
+<body>
+  <div class="container">
+    <div class="split_line">
+      <p>在售产品</p>
+    </div>
+    <!--产品展示卡片-->
+    <div id="onsale">
+    </div>
+    <script>
+
+      function onLoad(){
+
+        $.get(MarketAPI.getAllGoodsInfoByListAPI(),function (data){
+          data = JSON.parse(data).data
+          var len = data.length
+          for(i=0;i < len;i++){
+            if(data[i].status === 0) {
+              lst = data[i]
+              var divt = getOnSaleDiv("#","osname"+i,"osdesc"+i,"osleft"+i,lst.maxpic,lst.id)
+              //console.log(divt)
+              $("#onsale").append(divt)
+
+
+              document.getElementById("osname" + i).innerHTML = "【" + lst.group_name + "】" + lst.name //添加商品名称
+              document.getElementById("osdesc" + i).innerHTML = lst.description  //添加商品描述
+              document.getElementById("osleft" + i).innerHTML = "剩余库存" + (lst.maximum - lst.bought)  //添加商品余量
+            }else if (data[i].status === 1){
+              lst = data[i]
+              $("#forsale").append(getForSaleDiv("#","fsname" + i , "fsdesc" + i,"fsleft" + i ,lst.maxpic,lst.id))
+              document.getElementById("fsname" + i).innerHTML = "【" + lst.group_name + "】" + lst.name + "(待售)" //添加商品名称
+              document.getElementById("fsdesc" + i).innerHTML = lst.description  //添加商品描述
+              document.getElementById("fsleft" + i).innerHTML = "剩余库存" + (lst.maximum - lst.bought)  //添加商品余量
+            }
+
+          }
+        })
+      }
+    </script>
+    <div class="split_line">
+      <p>待售产品</p>
+    </div>
+    <div id="forsale"></div>
+
+  </div>
+
+  <!--底部菜单栏-->
+  <div class=" container-fluid fixed-bottom" id="button_menu">
+    <div class="row">
+      <div class="col-4 button_menu_col"><a href="#"><img alt="button_icon" class="button_icon" src="images/icon/shouye.png"></a></div>
+      <div class="col-4 button_menu_col"><a href="#"><img alt="button_icon" class="button_icon" src="images/icon/gouwuche.png"></a></div>
+      <div class="col-4 button_menu_col"><a href="#" id="2Me-page"><img alt="button_icon" id="mePage" class="button_icon" src="images/icon/wodejuhuasuan.png"></a></div>
+
+
+    </div>
+  </div>
+
+  <script>
+    function setMe(){
+      var sid=getCookie("sid"),passwd=getCookie("passwd")
+      if (sid === "" || passwd === ""){
+        var content= document.getElementById('mePage');
+        content.dataset.bsToggle = "modal"
+        content.dataset.bsTarget = "#myModal"
+      }else {
+        $("#2Me-page").attr("href","me.html")
+      }
+
+
+    }
+  </script>
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- 模态框头部 -->
+        <div class="modal-header">
+          <h4 class="modal-title">登录</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- 模态框内容 -->
+        <div class="modal-body">
+          <form action="">
+            <div class="mb-3 mt-3">
+              <label for="email" class="form-label">学号:</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter student ID" name="email">
+            </div>
+            <div class="mb-3">
+              <label for="pwd" class="form-label">密码:</label>
+              <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
+            </div>
+            <div class="form-check mb-3">
+              <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" name="remember"> 记住我
+              </label>
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary">登录</button>
+              <button type="submit" class="btn btn-primary">注册</button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- 模态框底部 -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

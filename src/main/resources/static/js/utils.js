@@ -8,16 +8,26 @@ String.prototype.format = function(){
     return s;
   };
 
-function getOnSaleDiv(name,description,left) {
-    div_child1 = '<div class="card card-body"><a href="#" class="card_link"><div class="row"><div class="col-4"><img src="images/replace.png" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id="'
+function getOnSaleDiv(href_url,name,description,left,pic,gid) {
+    if (pic === 0){
+        p = "images/replace.png"
+    }else {
+        p = "images/"+gid+".jpg"
+    }
+    div_child1 = '<div class="card card-body"><a href="'+ href_url +'" class="card_link"><div class="row"><div class="col-4"><img src="' + p+ '" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id="'
     div_child2 = '">【社团名称】产品名称</h4><p class="card-text" id="'
     div_child3 = '">产品简介</p><p class="btn btn-primary" id="'
     div_child4 = '">剩余库存: 123</p></div></div></a></div>'
     return div_child1 + name + div_child2 + description + div_child3 + left + div_child4
   }
 
-  function getForSaleDiv(name,description,left){
-    var dv = '<div class="card card-body"><a href="#" class="card_link"><div class="row"><div class="col-4"><img src="images/replace.png" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id = "' +name+ '">【社团名称】产品名称</h4><p class="card-text" id="' + description+ '">产品简介：</p><p class="btn btn-primary" id = "'+ left +'">剩余库存: 234</p></div></div></a></div></div>'
+  function getForSaleDiv(href_url,name,description,left,pic,gid){
+      if (pic === 0){
+          p = "images/replace.png"
+      }else {
+          p = "images/"+gid+".jpg"
+      }
+    var dv = '<div class="card card-body"><a href="' + href_url + '" class="card_link"><div class="row"><div class="col-4"><img src="'+p+'" class="card-img-top"></div><div class="col-8"><h4 class="card-title" id = "' +name+ '">【社团名称】产品名称</h4><p class="card-text" id="' + description+ '">产品简介：</p><p class="btn btn-primary" id = "'+ left +'">剩余库存: 234</p></div></div></a></div></div>'
     return dv
   }
 

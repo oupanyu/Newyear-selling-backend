@@ -35,6 +35,7 @@ public class GetGoodsInfoByList {
                 object.put("group_name",result.getString("group_name"));
                 object.put("status",result.getShort("status"));
                 object.put("description",result.getString("description"));
+                object.put("maxpic",result.getString("maxpic"));
                 object.put("bought",result.getInt("bought"));
                 object.put("price",result.getInt("price"));
                 jsonArray.add(object);
